@@ -1,0 +1,33 @@
+#!/bin/bash -ex
+
+UNAME=${UNAME:-uname}
+GREP=${GREP:-grep}
+REQUIRED=( ${UNAME} ${GREP} )
+
+source check_required
+
+OUTPUT="$(uname -a)"
+
+echo "$OUTPUT" | grep Darwin > /dev/null
+DARWIN=$?
+
+echo $OUTPUT | grep Linux   > /dev/null
+LINUX=$?
+
+echo $OUTPUT | grep Windows > /dev/null
+WIN=$?
+
+OS=""
+
+if [ $DARWIN ] && [ $LINUX ] && [ $WIN ]; then
+  echo "  OS version could not be determined."
+  exit 1
+elif [ $DARWIN -eq 0 ]; then
+  OS="darwin"
+elif [ $LINUX -eq 0 ]; then
+  OS="linux"
+elif [ $WIN -eq 0 ]; then
+  OS="win"
+fi
+
+echo "$OS"
