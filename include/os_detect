@@ -4,7 +4,7 @@ UNAME=${UNAME:-uname}
 GREP=${GREP:-grep}
 REQUIRED=( ${UNAME} ${GREP} )
 
-source check_required
+source ${INCLUDEDIR}/check_required
 case "$(uname)" in
 	Darwin) OS="darwin";;
 	Linux) OS="linux";;
