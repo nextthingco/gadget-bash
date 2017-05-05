@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/bash -x
 
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 INCLUDEDIR="${SCRIPTDIR}/include"
 
 VERSION="v1"
-DIRECTORY="./"
+DIRECTORY="$PWD"
 
 C_INIT=0
 C_BUILD=0
@@ -18,8 +18,8 @@ C_LOG=0
 
 source ${INCLUDEDIR}/os_detect
 
-for ARG in "$@"; do
-	case "$ARG" in
+while test $# -gt 0; do
+	case "$1" in
 		-v|--version|version)
 			echo "  - version: $VERSION"
 			exit 0
@@ -33,13 +33,13 @@ for ARG in "$@"; do
 			exit 0
 			;;
 		-C|--directory)
-			echo "  - from ${2}"
+			echo "  - in ${2}"
 			DIRECTORY=${2}
 			shift 2
 			;;
 		init)
 			C_INIT=1
-			echo "  - creating new project in ${DIRECTORY}"
+			echo "  - creating new project"
 			shift
 			;;
 		build)
@@ -82,6 +82,9 @@ for ARG in "$@"; do
 			echo "  - retrieving logs"
 			shift
 			;;
+		*)
+			echo "  - unidentified param $ARG"
+			exit 1
 	esac
 	
 	COMMANDS=(
@@ -98,3 +101,13 @@ for ARG in "$@"; do
 	
 	source ${INCLUDEDIR}/check_cmd_conflict
 done
+
+[ ${C_INIT}   ] && source ${INCLUDEDIR}/gadget_init && exit 0
+[ ${C_BUILD}  ] && exit 0
+[ ${C_DEPLOY} ] && exit 0
+[ ${C_START}  ] && exit 0
+[ ${C_STOP}   ] && exit 0
+[ ${C_STATUS} ] && exit 0
+[ ${C_DELETE} ] && exit 0
+[ ${C_SHELL}  ] && exit 0
+[ ${C_LOG}    ] && exit 0

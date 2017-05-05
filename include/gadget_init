@@ -1,0 +1,26 @@
+#!/bin/bash
+
+TOUCH=${TOUCH:-touch}
+CAT=${CAT:-cat}
+UUIDGEN=${UUIDGEN:-uuidgen}
+MKDIR=${MKDIR:-mkdir}
+BASENAME=${BASENAME:-basename}
+READLINK=${READLINK:-readlink}
+REQUIRED=( ${TOUCH} ${CAT} ${UUIDGEN} ${MKDIR} ${BASENAME} ${READLINK} )
+
+source ${INCLUDEDIR}/check_required
+
+if [ ! -d ${DIRECTORY} ]; then
+	mkdir -p ${DIRECTORY}
+fi
+
+touch ${DIRECTORY}/gadget.cfg
+
+echo "name=$(basename $(readlink -e ${DIRECTORY}))" >> ${DIRECTORY}/gadget.cfg
+echo "uuid=$(uuidgen)"   >> ${DIRECTORY}/gadget.cfg
+
+cat <<-EOF > ${DIRECTORY}/Dockerfile
+FROM armhf/alpine
+
+CMD ["/bin/sh","-c","'echo hello'"]
+EOF
