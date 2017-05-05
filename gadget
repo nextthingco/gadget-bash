@@ -1,12 +1,11 @@
-#!/bin/bash -ex
+#!/bin/bash
 
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 INCLUDEDIR="${SCRIPTDIR}/include"
-F_VERSION="v1"
 
-F_VERBOSE=0
-F_HELP=0
-F_DIRECTORY="./"
+VERSION="v1"
+DIRECTORY="./"
+
 C_INIT=0
 C_BUILD=0
 C_DEPLOY=0
@@ -35,7 +34,7 @@ for ARG in "$@"; do
 			;;
 		-C|--directory)
 			echo "  - from ${2}"
-			F_DIRECTORY=${2}
+			DIRECTORY=${2}
 			shift 2
 			;;
 		init)
@@ -69,7 +68,7 @@ for ARG in "$@"; do
 			shift
 			;;
 		delete)
-			C_DELTE=1
+			C_DELETE=1
 			echo "  - delete container on gadget"
 			shift
 			;;
