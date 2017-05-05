@@ -2,6 +2,100 @@
 
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 INCLUDEDIR="${SCRIPTDIR}/include"
+F_VERSION="v1"
+
+F_VERBOSE=0
+F_HELP=0
+F_DIRECTORY="./"
+C_INIT=0
+C_BUILD=0
+C_DEPLOY=0
+C_START=0
+C_STOP=0
+C_STATUS=0
+C_DELETE=0
+C_SHELL=0
+C_LOG=0
 
 source ${INCLUDEDIR}/os_detect
 
+for ARG in "$@"; do
+	case "$ARG" in
+		-v|--version|version)
+			echo "  - version: $VERSION"
+			exit 0
+			;;
+		-V|--verbose|verbose)
+			echo "  - verbose"
+			shift
+			;;
+		-h|--help|help)
+			echo "  - this is the help text"
+			exit 0
+			;;
+		-C|--directory)
+			echo "  - from ${2}"
+			F_DIRECTORY=${2}
+			shift 2
+			;;
+		init)
+			C_INIT=1
+			echo "  - creating new project in ${DIRECTORY}"
+			shift
+			;;
+		build)
+			C_BUILD=1
+			echo "  - building project"
+			shift
+			;;
+		deploy)
+			C_DEPLOY=1
+			echo "  - deploying project"
+			shift
+			;;
+		start)
+			C_START=1
+			echo "  - starting container"
+			shift
+			;;
+		stop)
+			C_STOP=1
+			echo "  - stopping container"
+			shift
+			;;
+		status)
+			C_STATUS=1
+			echo "  - status"
+			shift
+			;;
+		delete)
+			C_DELTE=1
+			echo "  - delete container on gadget"
+			shift
+			;;
+		shell)
+			C_SHELL=1
+			echo "  - entering gadget's shell"
+			shift
+			;;
+		log)
+			C_LOG=1
+			echo "  - retrieving logs"
+			shift
+			;;
+	esac
+	
+	COMMANDS=(
+		${C_INIT}
+		${C_BUILD}
+		${C_DEPLOY}
+		${C_START}
+		${C_STOP}
+		${C_STATUS}
+		${C_DELETE}
+		${C_SHELL}
+		${C_LOG}
+	)
+	
+	source ${INCLUDEDIR}/check_cmd_conflict
+done
