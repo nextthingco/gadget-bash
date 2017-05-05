@@ -1,20 +1,20 @@
 #!/bin/bash
 
-TOUCH=${TOUCH:-touch}
 CAT=${CAT:-cat}
 UUIDGEN=${UUIDGEN:-uuidgen}
-MKDIR=${MKDIR:-mkdir}
 BASENAME=${BASENAME:-basename}
 READLINK=${READLINK:-readlink}
-REQUIRED=( ${TOUCH} ${CAT} ${UUIDGEN} ${MKDIR} ${BASENAME} ${READLINK} )
+REQUIRED=( ${CAT} ${UUIDGEN} ${BASENAME} ${READLINK} )
 
 source ${INCLUDEDIR}/check_required
+source ${INCLUDEDIR}/common
 
-if [ ! -d ${DIRECTORY} ]; then
-	${MKDIR} -p ${DIRECTORY}
-fi
-
-${TOUCH} ${DIRECTORY}/gadget.cfg
+create_directory ${DIRECTORY}
+check_directory  ${DIRECTORY}
+create_file      ${DIRECTORY}/gadget.cfg
+check_file       ${DIRECTORY}/gadget.cfg
+create_file      ${DIRECTORY}/Dockerfile
+check_file       ${DIRECTORY}/Dockerfile
 
 echo "name=$(${BASENAME} $(${READLINK} -e ${DIRECTORY}))" >> ${DIRECTORY}/gadget.cfg
 echo "uuid=$(${UUIDGEN})"   >> ${DIRECTORY}/gadget.cfg

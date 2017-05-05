@@ -1,0 +1,39 @@
+#!/bin/bash
+
+MKDIR=${MKDIR:-mkdir}
+TOUCH=${TOUCH:-touch}
+REQUIRED=( ${MKDIR} ${TOUCH} )
+
+source ${INCLUDEDIR}/check_required
+
+function create_directory {
+	if [[ ! -d "${1}" ]]; then
+		mkdir -p ${1}
+		if [ ${?} -ne 0 ]; then
+			echo "  - failed to create directory ${1}"
+			exit 1
+		fi
+	fi
+}
+
+function create_file {
+	if [[ ! -f "${1}" ]]; then
+		touch ${1}
+		if [ ${?} -ne 0 ]; then
+			echo "  - failed to create file ${1}"
+			exit 1
+		fi
+	fi
+}
+
+function check_directory {
+	if [[ ! -d "${1}" ]]; then
+		echo "  - could not locate directory ${1}"
+	fi
+}
+
+function check_file {
+	if [[ ! -f "${1}" ]]; then
+		echo "  - could not locate file ${1}"
+	fi
+}

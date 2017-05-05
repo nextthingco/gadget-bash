@@ -4,10 +4,17 @@ UNAME=${UNAME:-uname}
 REQUIRED=( ${UNAME} )
 
 source ${INCLUDEDIR}/check_required
+
 case "$(${UNAME})" in
-	Darwin) OS="darwin";;
-	Linux) OS="linux";;
-	MSYS32) OS="windows";;
+	Darwin)
+		OS="darwin"
+		;;
+	Linux)
+		OS="linux"
+		;;
+	MSYS32)
+		OS="windows"
+		;;
 	*)
 		echo "  OS version not supported/could not be determined"
 		exit 1

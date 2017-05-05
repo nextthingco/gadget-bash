@@ -1,14 +1,14 @@
 #!/bin/bash
 
 DOCKER=${DOCKER:-docker}
-REQUIRED=( ${DOCKER} )
+SSH=${SSH:-ssh}
+REQUIRED=( ${DOCKER} ${SSH} )
 
 source ${INCLUDEDIR}/check_required
 source ${INCLUDEDIR}/common
 
 check_directory  ${DIRECTORY}
 check_file       ${DIRECTORY}/gadget.cfg
-check_file       ${DIRECTORY}/Dockerfile
 
 source ${DIRECTORY}/gadget.cfg
-${DOCKER} build -t ${name}_${uuid}-img ${DIRECTORY}
+${DOCKER} save ${name}_${uuid}-img | ${SSH} root@gadget.local -t "docker load"
