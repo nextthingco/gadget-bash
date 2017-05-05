@@ -102,12 +102,12 @@ while test $# -gt 0; do
 	source ${INCLUDEDIR}/check_cmd_conflict
 done
 
-[ ${C_INIT}   ] && source ${INCLUDEDIR}/gadget_init && exit 0
-[ ${C_BUILD}  ] && exit 0
-[ ${C_DEPLOY} ] && exit 0
-[ ${C_START}  ] && exit 0
-[ ${C_STOP}   ] && exit 0
-[ ${C_STATUS} ] && exit 0
-[ ${C_DELETE} ] && exit 0
-[ ${C_SHELL}  ] && exit 0
-[ ${C_LOG}    ] && exit 0
+[[ 1 -eq ${C_INIT}   ]] && source ${INCLUDEDIR}/gadget_init  && exit 0
+[[ 1 -eq ${C_BUILD}  ]] && source ${INCLUDEDIR}/gadget_build && exit 0
+[[ 1 -eq ${C_DEPLOY} ]] && exit 0
+[[ 1 -eq ${C_START}  ]] && exit 0
+[[ 1 -eq ${C_STOP}   ]] && exit 0
+[[ 1 -eq ${C_STATUS} ]] && exit 0
+[[ 1 -eq ${C_DELETE} ]] && exit 0
+[[ 1 -eq ${C_SHELL}  ]] && exit 0
+[[ 1 -eq ${C_LOG}    ]] && exit 0

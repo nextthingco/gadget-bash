@@ -1,11 +1,10 @@
 #!/bin/bash
 
 UNAME=${UNAME:-uname}
-GREP=${GREP:-grep}
-REQUIRED=( ${UNAME} ${GREP} )
+REQUIRED=( ${UNAME} )
 
 source ${INCLUDEDIR}/check_required
-case "$(uname)" in
+case "$(${UNAME})" in
 	Darwin) OS="darwin";;
 	Linux) OS="linux";;
 	MSYS32) OS="windows";;

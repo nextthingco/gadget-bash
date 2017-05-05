@@ -1,0 +1,9 @@
+#!/bin/bash
+
+DOCKER=${DOCKER:-docker}
+REQUIRED=( ${DOCKER} )
+
+source ${INCLUDEDIR}/check_required
+
+source ${DIRECTORY}/gadget.cfg
+${DOCKER} build -t ${name}_${uuid}-img ${DIRECTORY}
