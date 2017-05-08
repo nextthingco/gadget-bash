@@ -1,0 +1,54 @@
+#!/bin/bash
+
+SSH=${SSH:-ssh}
+SSH_KEYGEN=${SSH_KEYGEN:-ssh-keygen}
+SSH_ADD=${SSH_ADD:-ssh-add}
+SCP=${SCP:-scp}
+MKTEMP=${MKTEMP:-mktemp}
+CHMOD=${CHMOD:-chmod}
+REQUIRED=( ${SSH} ${SSH_KEYGEN} ${SCP} ${MKTEMP} ${CHMOD} )
+
+source ${INCLUDEDIR}/check_required
+source ${INCLUDEDIR}/os_detect
+
+case "${OS}" in
+	"darwin" | "linux" )
+		IP="192.168.81.1"
+		;;
+	"windows" )
+		IP="192.168.82.1"
+		;;
+	*)
+		echo "  OS version not supported/could not be determined"
+		echo "  Unable to set applicable IP address"
+		exit 1
+		;;
+esac
+
+source ${INCLUDEDIR}/common
+
+check_directory		${DIRECTORY}
+check_file			${DIRECTORY}/gadget.cfg
+
+source				${DIRECTORY}/gadget.cfg
+
+SSH_TEST=$(${SSH} -i ${INCLUDEDIR}/id_rsa root@${IP} -t "echo test")
+
+if [ ! -z ${SSH_TEST} ]; then
+	## BEGIN NEEDS SAFETY CHECKS
+	echo "  First use: generating unique ssh key"
+	TMPDIR=`${MKTEMP} -d -t gadget-ssh-XXXXXX`
+	check_directory ${TMPDIR}
+	
+	${SSH_KEYGEN} -t rsa -f ${TMPDIR}/${name}_${uuid} -N ""
+	chmod 600 ${TMPDIR}/${name}_${uuid}*
+	echo "  Copying new key to gadget"
+	${SCP} -i ${INCLUDEDIR}/id_rsa ${TMPDIR}/${name}_${uuid}.pub root@${IP}:/root/.ssh/authorized_keys
+	echo "  Installing new key to host"
+	cp ${TMPDIR}/${name}_${uuid} ${HOME}/.ssh/${name}_${uuid}
+	${SSH_ADD} ${HOME}/.ssh/${name}_${uuid}
+	rm -rf ${TMPDIR}
+	## END NEEDS SAFETY CHECKS
+else
+	echo "  Not first use: ???"
+fi

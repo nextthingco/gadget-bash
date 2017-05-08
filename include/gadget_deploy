@@ -6,9 +6,12 @@ REQUIRED=( ${DOCKER} ${SSH} )
 
 source ${INCLUDEDIR}/check_required
 source ${INCLUDEDIR}/common
+source ${INCLUDEDIR}/os_detect
 
 check_directory  ${DIRECTORY}
 check_file       ${DIRECTORY}/gadget.cfg
 
+source ${INCLUDEDIR}/test_ssh
+
 source ${DIRECTORY}/gadget.cfg
-${DOCKER} save ${name}_${uuid}-img | ${SSH} root@gadget.local -t "docker load"
+${DOCKER} save ${name}_${uuid}-img | ${SSH} root@${IP} -t "docker load"
