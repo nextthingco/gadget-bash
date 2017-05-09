@@ -15,3 +15,6 @@ source ${INCLUDEDIR}/test_ssh
 
 source ${DIRECTORY}/gadget.cfg
 ${SSH} ${SSH_OPTS} root@${IP}
+
+## Error check and report eg. "gadget_build error 0-15"
+[ ${?} -ne 0 ] && echo "  - ${BASH_SOURCE##*/} error ${?}-${LINENO}" && exit 1

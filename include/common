@@ -6,7 +6,9 @@ REQUIRED=( ${MKDIR} ${TOUCH} )
 
 source ${INCLUDEDIR}/check_required
 
+## COMMON VARIABLES
 SSH_OPTS="-oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null"
+GADGET_VERSION="v1"
 
 function create_directory {
 	if [[ ! -d "${1}" ]]; then
@@ -43,16 +45,9 @@ function check_file {
 function create_new_key {
 	## BEGIN NEEDS SAFETY CHECKS
 	echo "  First use: generating unique ssh key"
-	TMPDIR=`${MKTEMP} -d -t gadget-ssh-XXXXXX`
-	check_directory ${TMPDIR}
-	
-	${SSH_KEYGEN} -t rsa -f ${TMPDIR}/${name}_${uuid} -N ""
-	chmod 600 ${TMPDIR}/${name}_${uuid}*
-	echo "  Copying new key to gadget"
-	${SCP} ${SSH_OPTS} -i ${INCLUDEDIR}/id_rsa ${TMPDIR}/${name}_${uuid}.pub root@${IP}:/root/.ssh/authorized_keys
-	echo "  Installing new key to host"
-	cp ${TMPDIR}/${name}_${uuid} ${HOME}/.ssh/${name}_${uuid}
-	${SSH_ADD} ${HOME}/.ssh/${name}_${uuid}
-	rm -rf ${TMPDIR}
+	${SSH_KEYGEN} -t rsa -f ${HOME}/.ssh/gadget_rsa -N ""
+	chmod 600 ${HOME}/.ssh/gadget_rsa*
+	echo "  Adding new key to keychain"
+	${SSH_ADD} ${HOME}/.ssh/gadget_rsa
 	## END NEEDS SAFETY CHECKS
 }

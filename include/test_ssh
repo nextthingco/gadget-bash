@@ -32,25 +32,24 @@ check_file			${DIRECTORY}/gadget.cfg
 
 source				${DIRECTORY}/gadget.cfg
 
-${SSH} ${SSH_OPTS} -oBatchMode=yes -2 root@${IP} -t "echo gadget_probe" &> /dev/null
-USED=${?}
+check_directory		${HOME}/.ssh
+
+[ ! -f ${HOME}/.ssh/gadget_rsa ] && create_new_key
+
+${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "echo gadget_probe" &> /dev/null
+
 # 0 if logs in with available ssh keys, 255 if fails
-
-${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${INCLUDEDIR}/id_rsa root@${IP} -t "echo gadget_probe" &> /dev/null
-NEW=${?}
-# 0 if logs in with available ssh keys + default key, 255 if fails
-
-case "${USED}+${NEW}" in
-	"255+0")
-		echo "  First use: new key is required [old conflict]"
-		${SSH_KEYGEN} -f "${HOME}/.ssh/known_hosts" -R ${IP}
-		create_new_key
-		;;
-	"0+0")
-		echo "  ssh connection tested good"
-		;;
-	*)
-		echo "  ERROR: unexpected result at ssh test [${USED}+${NEW}]"
-		;;
-esac
+if [ ${?} -ne 0 ]; then
+	echo "  This looks like a freshly flashed device..."
+	${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${INCLUDEDIR}/id_rsa root@${IP} -t "echo gadget_probe" &> /dev/null
+	
+	if [ ${?} -ne 0 ]; then
+		echo "  Unable to login with local or default credentials, did you leave your keys at home? E:${?}"
+		exit 1
+	else
+		echo "  Copying new key to gadget"
+		## future warning: in certain circumstances gadget_rsa will get huge
+		${SCP} ${SSH_OPTS} -i ${INCLUDEDIR}/id_rsa ${HOME}/.ssh/gadget_rsa.pub root@${IP}:/root/.ssh/authorized_keys
+	fi
+fi
 

@@ -1,9 +1,8 @@
-#!/bin/bash -x
+#!/bin/bash
 
 SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 INCLUDEDIR="${SCRIPTDIR}/include"
 
-VERSION="v1"
 DIRECTORY="$PWD"
 
 C_INIT=0
@@ -17,19 +16,35 @@ C_SHELL=0
 C_LOG=0
 
 source ${INCLUDEDIR}/os_detect
+source ${INCLUDEDIR}/common
 
 while test $# -gt 0; do
 	case "$1" in
 		-v|--version|version)
-			echo "  - version: $VERSION"
+			echo "  - version: $GADGET_VERSION"
 			exit 0
 			;;
 		-V|--verbose|verbose)
-			echo "  - verbose"
+			echo "  - verbose mode: ENGAGE"
 			shift
 			;;
 		-h|--help|help)
-			echo "  - this is the help text"
+			echo "  - help                                                             "
+			echo "    Flags:                                                           "
+			echo "      -v | --version   | version      [ show this utility's version ]"
+			echo "      -V | --verbose   | verbose      [ more explicit output        ]"
+			echo "      -h | --help      | help         [ print help text             ]"
+			echo "      -C | --directory |              [ specify a foreign directory ]"
+			echo "    Commands:                                                        "
+			echo "      init                            [ create project skeleton     ]"
+			echo "      build                           [ build project image         ]"
+			echo "      deploy                          [ copy image onto gadget      ]"
+			echo "      start                           [ run/create a container      ]"
+			echo "      stop                            [ stop/delete a container     ]"
+			echo "      status                          [ read container status       ]"
+			echo "      delete                          [ remove an image from gadget ]"
+			echo "      shell                           [ gain shell access to debug  ]"
+			echo "      log                             [ show container's stdout     ]"
 			exit 0
 			;;
 		-C|--directory)

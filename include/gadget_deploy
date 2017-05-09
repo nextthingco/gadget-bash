@@ -14,4 +14,7 @@ check_file       ${DIRECTORY}/gadget.cfg
 source ${INCLUDEDIR}/test_ssh
 
 source ${DIRECTORY}/gadget.cfg
-${DOCKER} save ${name}_${uuid}-img | ${SSH} ${SSH_OPTS} root@${IP} -t "docker load"
+${DOCKER} save ${name}_${uuid}-img | ${SSH} ${SSH_OPTS} -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "docker load"
+
+## Error check and report eg. "gadget_build error 0-15"
+[ ${?} -ne 0 ] && echo "  - ${BASH_SOURCE##*/} error ${?}-${LINENO}" && exit 1

@@ -12,3 +12,6 @@ check_file       ${DIRECTORY}/Dockerfile
 
 source ${DIRECTORY}/gadget.cfg
 ${DOCKER} build -t ${name}_${uuid}-img ${DIRECTORY}
+
+## Error check and report eg. "gadget_build error 0-15"
+[ ${?} -ne 0 ] && echo "  - ${BASH_SOURCE##*/} error ${?}-${LINENO}" && exit 1

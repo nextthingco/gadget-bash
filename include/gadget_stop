@@ -14,6 +14,14 @@ check_file       ${DIRECTORY}/gadget.cfg
 source ${INCLUDEDIR}/test_ssh
 
 source ${DIRECTORY}/gadget.cfg
+
 ${SSH} ${SSH_OPTS} root@${IP} -t "docker stop \$(docker ps -aq --filter ancestor=${name}_${uuid}-img)"
+
+## Error check and report eg. "gadget_build error 0-15"
+[ ${?} -ne 0 ] && echo "  - ${BASH_SOURCE##*/} error ${?}-${LINENO}" && exit 1
+
 ${SSH} ${SSH_OPTS} root@${IP} -t "docker rm \$(docker ps -aq --filter ancestor=${name}_${uuid}-img)"
+
+## Error check and report eg. "gadget_build error 0-15"
+[ ${?} -ne 0 ] && echo "  - ${BASH_SOURCE##*/} error ${?}-${LINENO}" && exit 1
 
