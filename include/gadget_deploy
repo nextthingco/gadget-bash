@@ -14,4 +14,4 @@ check_file       ${DIRECTORY}/gadget.cfg
 source ${INCLUDEDIR}/test_ssh
 
 source ${DIRECTORY}/gadget.cfg
-${DOCKER} save ${name}_${uuid}-img | ${SSH} root@${IP} -t "docker load"
+${DOCKER} save ${name}_${uuid}-img | ${SSH} ${SSH_OPTS} root@${IP} -t "docker load"
