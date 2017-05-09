@@ -29,19 +29,23 @@ source ${INCLUDEDIR}/common
 
 check_directory		${DIRECTORY}
 check_file			${DIRECTORY}/gadget.cfg
-
 source				${DIRECTORY}/gadget.cfg
-
 check_directory		${HOME}/.ssh
 
 [ ! -f ${HOME}/.ssh/gadget_rsa ] && create_new_key
 
 ${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "echo gadget_probe" &> /dev/null
 
+## Error check and report eg. "gadget_build error 0-15"
+ERR_CACHE=${?}; [ ${ERR_CACHE} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${ERR_CACHE} ${LINENO}
+
 # 0 if logs in with available ssh keys, 255 if fails
 if [ ${?} -ne 0 ]; then
 	echo "  This looks like a freshly flashed device..."
 	${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${INCLUDEDIR}/id_rsa root@${IP} -t "echo gadget_probe" &> /dev/null
+	
+	## Error check and report eg. "gadget_build error 0-15"
+	ERR_CACHE=${?}; [ ${ERR_CACHE} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${ERR_CACHE} ${LINENO}
 	
 	if [ ${?} -ne 0 ]; then
 		echo "  Unable to login with local or default credentials, did you leave your keys at home? E:${?}"
@@ -50,6 +54,12 @@ if [ ${?} -ne 0 ]; then
 		echo "  Copying new key to gadget"
 		## future warning: in certain circumstances gadget_rsa will get huge
 		${SCP} ${SSH_OPTS} -i ${INCLUDEDIR}/id_rsa ${HOME}/.ssh/gadget_rsa.pub root@${IP}:/root/.ssh/authorized_keys
+	
+		## Error check and report eg. "gadget_build error 0-15"
+		ERR_CACHE=${?}; [ ${ERR_CACHE} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${ERR_CACHE} ${LINENO}
 	fi
 fi
 
+check_directory  ${HOME}/.ssh
+check_file       ${HOME}/.ssh/gadget_rsa
+check_file       ${HOME}/.ssh/gadget_rsa.pub

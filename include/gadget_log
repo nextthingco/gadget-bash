@@ -13,8 +13,12 @@ check_file       ${DIRECTORY}/gadget.cfg
 
 source ${INCLUDEDIR}/test_ssh
 
+check_directory  ${HOME}/.ssh
+check_file       ${HOME}/.ssh/gadget_rsa
+check_file       ${HOME}/.ssh/gadget_rsa.pub
+
 source ${DIRECTORY}/gadget.cfg
 ${SSH} ${SSH_OPTS} root@${IP} -t "docker logs \$(docker ps -aq --filter ancestor=${name}_${uuid}-img)"
 
 ## Error check and report eg. "gadget_build error 0-15"
-[ ${?} -ne 0 ] && echo "  - ${BASH_SOURCE##*/} error ${?}-${LINENO}" && exit 1
+ERR_CACHE=${?}; [ ${ERR_CACHE} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${ERR_CACHE} ${LINENO}

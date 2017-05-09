@@ -7,7 +7,7 @@ REQUIRED=( ${MKDIR} ${TOUCH} )
 source ${INCLUDEDIR}/check_required
 
 ## COMMON VARIABLES
-SSH_OPTS="-oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null"
+SSH_OPTS="-o ConnectTimeout=5 -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null"
 GADGET_VERSION="v1"
 
 function create_directory {
@@ -50,4 +50,8 @@ function create_new_key {
 	echo "  Adding new key to keychain"
 	${SSH_ADD} ${HOME}/.ssh/gadget_rsa
 	## END NEEDS SAFETY CHECKS
+}
+
+function gadget_error {
+	echo "  ERROR: ${1} w/ ${2} @ ${3}" && exit 1
 }
