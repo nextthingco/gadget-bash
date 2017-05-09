@@ -22,5 +22,5 @@ echo "uuid=$(${UUIDGEN})"   >> ${DIRECTORY}/gadget.cfg
 ${CAT} <<-EOF > ${DIRECTORY}/Dockerfile
 FROM armhf/alpine
 
-CMD ["/bin/sh","-c","'echo hello'"]
+CMD ["/bin/cat","/etc/os-release"]
 EOF
