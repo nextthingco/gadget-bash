@@ -32,19 +32,25 @@ check_file			${DIRECTORY}/gadget.cfg
 
 source				${DIRECTORY}/gadget.cfg
 
-${SSH} ${SSH_OPTS} root@${IP} -t "echo gadget_probe" &> /dev/null
+${SSH} ${SSH_OPTS} -oBatchMode=yes -2 root@${IP} -t "echo gadget_probe" &> /dev/null
+USED=${?}
+# 0 if logs in with available ssh keys, 255 if fails
 
-case "${?}" in
-	255)
-		echo "  A new key is required [old conflict]"
+${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${INCLUDEDIR}/id_rsa root@${IP} -t "echo gadget_probe" &> /dev/null
+NEW=${?}
+# 0 if logs in with available ssh keys + default key, 255 if fails
+
+case "${USED}+${NEW}" in
+	"255+0")
+		echo "  First use: new key is required [old conflict]"
 		${SSH_KEYGEN} -f "${HOME}/.ssh/known_hosts" -R ${IP}
 		create_new_key
 		;;
-	0)
+	"0+0")
 		echo "  ssh connection tested good"
 		;;
 	*)
-		echo "  ERROR: unexpected result at ssh test"
+		echo "  ERROR: unexpected result at ssh test [${USED}+${NEW}]"
 		;;
 esac
 

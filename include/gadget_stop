@@ -1,0 +1,19 @@
+#!/bin/bash
+
+DOCKER=${DOCKER:-docker}
+SSH=${SSH:-ssh}
+REQUIRED=( ${DOCKER} ${SSH} )
+
+source ${INCLUDEDIR}/check_required
+source ${INCLUDEDIR}/common
+source ${INCLUDEDIR}/os_detect
+
+check_directory  ${DIRECTORY}
+check_file       ${DIRECTORY}/gadget.cfg
+
+source ${INCLUDEDIR}/test_ssh
+
+source ${DIRECTORY}/gadget.cfg
+${SSH} ${SSH_OPTS} root@${IP} -t "docker stop \$\(docker ps -aq --filter ancestor=${name}_${uuid}-img\)"
+${SSH} ${SSH_OPTS} root@${IP} -t "docker rm \$\(docker ps -aq --filter ancestor=${name}_${uuid}-img\)"
+

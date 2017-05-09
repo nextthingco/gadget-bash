@@ -105,9 +105,9 @@ done
 [[ 1 -eq ${C_INIT}   ]] && source ${INCLUDEDIR}/gadget_init   && exit 0
 [[ 1 -eq ${C_BUILD}  ]] && source ${INCLUDEDIR}/gadget_build  && exit 0
 [[ 1 -eq ${C_DEPLOY} ]] && source ${INCLUDEDIR}/gadget_deploy && exit 0
-[[ 1 -eq ${C_START}  ]] && exit 0
-[[ 1 -eq ${C_STOP}   ]] && exit 0
-[[ 1 -eq ${C_STATUS} ]] && exit 0
-[[ 1 -eq ${C_DELETE} ]] && exit 0
-[[ 1 -eq ${C_SHELL}  ]] && exit 0
-[[ 1 -eq ${C_LOG}    ]] && exit 0
+[[ 1 -eq ${C_START}  ]] && source ${INCLUDEDIR}/gadget_start  && exit 0
+[[ 1 -eq ${C_STOP}   ]] && source ${INCLUDEDIR}/gadget_stop   && exit 0
+[[ 1 -eq ${C_STATUS} ]] && source ${INCLUDEDIR}/gadget_status && exit 0
+[[ 1 -eq ${C_DELETE} ]] && source ${INCLUDEDIR}/gadget_delete && exit 0
+[[ 1 -eq ${C_SHELL}  ]] && source ${INCLUDEDIR}/gadget_shell  && exit 0
+[[ 1 -eq ${C_LOG}    ]] && source ${INCLUDEDIR}/gadget_log    && exit 0
