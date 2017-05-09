@@ -14,4 +14,4 @@ check_file       ${DIRECTORY}/gadget.cfg
 source ${INCLUDEDIR}/test_ssh
 
 source ${DIRECTORY}/gadget.cfg
-${SSH} ${SSH_OPTS} root@${IP} -t "docker rmi ${name}_${uuid}-img"
+${SSH} ${SSH_OPTS} root@${IP} -t "docker logs \$(docker ps -aq --filter ancestor=${name}_${uuid}-img)"
