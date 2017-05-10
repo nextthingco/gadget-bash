@@ -22,3 +22,5 @@ ${SSH} ${SSH_OPTS} root@${IP} -t "docker rmi ${name}_${uuid}-img"
 
 ## Error check and report eg. "gadget_build error 0-15"
 RC=${?}; [ ${RC} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${RC} ${LINENO}
+
+echo "  - done"

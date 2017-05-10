@@ -2,7 +2,9 @@
 
 DOCKER=${DOCKER:-docker}
 SSH=${SSH:-ssh}
-REQUIRED=( ${DOCKER} ${SSH} )
+BC=${BC:-bc}
+SED=${SED:-sed}
+REQUIRED=( ${DOCKER} ${SSH} ${BC} ${SED} )
 
 source ${INCLUDEDIR}/check_required
 source ${INCLUDEDIR}/common
@@ -18,7 +20,41 @@ check_file       ${HOME}/.ssh/gadget_rsa
 check_file       ${HOME}/.ssh/gadget_rsa.pub
 
 source ${DIRECTORY}/gadget.cfg
+
+## Determine general time estimate @ 800kbps [damn the nand]
+
+SIZE="$(${DOCKER} images --format "{{.Size}}" ${name}_${uuid}-img)"
+
+case "${SIZE}" in
+	*GB )
+		echo "  ERROR: ${name}_${uuid}-img is too large for the gadget [ ${SIZE} Bytes ]"
+		exit 1
+		;;
+	*MB )
+		echo "megabytes"
+		B_SIZE=$(echo "scale=0; (1000*1000*$(echo ${SIZE} | ${SED} 's% MB%%g'))/1" | ${BC} -l)
+		;;
+	*KB )
+		echo "kilobytes"
+		B_SIZE=$(echo "scale=0; (1000*$(echo ${SIZE} | ${SED} 's% KB%%g'))/1" | ${BC} -l)
+		;;
+	*B  )
+		echo "bytes"
+		B_SIZE=$(echo "scale=0; ($(echo ${SIZE} | ${SED} 's% B%%g'))/1" | ${BC} -l)
+		;;
+	*   )
+		echo "  ERROR: Size of ${name}_${uuid}-img could not be determined"
+		exit 1
+		;;
+esac
+
+echo "  - Estimated transfer time: $(echo "scale=1; ${B_SIZE}/800000" | bc -l)s" 1>&3 2>&4
+
+## Push the container over ssh
+
 ${DOCKER} save ${name}_${uuid}-img | ${SSH} ${SSH_OPTS} -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "docker load"
 
 ## Error check and report eg. "gadget_build error 0-15"
 RC=${?}; [ ${RC} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${RC} ${LINENO}
+
+echo "  - done"

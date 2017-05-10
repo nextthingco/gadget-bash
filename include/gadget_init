@@ -16,7 +16,9 @@ check_file       ${DIRECTORY}/gadget.cfg
 create_file      ${DIRECTORY}/Dockerfile
 check_file       ${DIRECTORY}/Dockerfile
 
-echo "project_gadget_version=${GADGET_VERSION}" >> ${DIRECTORY}/gadget.cfg
+## Create scaffolding
+
+echo "project_gadget_version=${GADGET_VERSION}" > ${DIRECTORY}/gadget.cfg
 echo "name=$(${BASENAME} $(${READLINK} -e ${DIRECTORY}))" >> ${DIRECTORY}/gadget.cfg
 echo "uuid=$(${UUIDGEN})"   >> ${DIRECTORY}/gadget.cfg
 
@@ -25,3 +27,5 @@ FROM armhf/alpine
 
 CMD ["/bin/cat","/etc/os-release"]
 EOF
+
+echo "  - done"

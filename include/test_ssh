@@ -37,26 +37,34 @@ check_directory		${HOME}/.ssh
 
 ${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "echo gadget_probe"
 
-# 0 if logs in with available ssh keys, 255 if fails
+## 0 if logs in with available ssh keys, 255 if fails
+## On failure, use default key
+
+## NOTE: If a user tries to "bless" more devices than is allowed in OpenSSH's MaxTries setting,
+##       they will be blocked from communicating with the device until reboot or service restart
+
 if [ ${?} -ne 0 ]; then
 	echo "  Attempting to connect to device..." 1>&3 2>&4
 	${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${INCLUDEDIR}/id_rsa root@${IP} -t "echo gadget_probe"
 		
 	if [ ${?} -ne 0 ]; then
 		echo "  ERROR: Unable to login with local or default credentials." 1>&3 2>&4
+		## Should have created gadget_rsa, tried, failed, then tried and failed with default key
+		## something is borked
 		
 		${PING} -W 5 -c 1 ${IP}
 		if [ ${?} -eq 0 ]; then
 			echo "  ERROR: But the devices is booted and ready," 1>&3 2>&4
 			echo "  ERROR: did you leave your ssh keys at home?" 1>&3 2>&4
+			## ping can reach it, must be missing keys or something
 		else
 			echo "  ERROR: Is the device connected?" 1>&3 2>&4
+			## PEBKAC
 		fi
 		
 		exit 1
 	else
 		echo "  Copying new key to gadget" 1>&3 2>&4
-		## future warning: in certain circumstances gadget_rsa will get huge
 		${SCP} ${SSH_OPTS} -i ${INCLUDEDIR}/id_rsa ${HOME}/.ssh/gadget_rsa.pub root@${IP}:/root/.ssh/authorized_keys
 	
 		## Error check and report eg. "gadget_build error 0-15"
