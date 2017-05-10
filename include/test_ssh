@@ -11,6 +11,7 @@ REQUIRED=( ${SSH} ${SSH_KEYGEN} ${SCP} ${MKTEMP} ${CHMOD} ${PING} )
 
 source ${INCLUDEDIR}/check_required
 source ${INCLUDEDIR}/os_detect
+source ${INCLUDEDIR}/common
 
 case "${OS}" in
 	"darwin" | "linux" )
@@ -20,13 +21,12 @@ case "${OS}" in
 		IP="192.168.82.1"
 		;;
 	*)
-		echo "  OS version not supported/could not be determined"
-		echo "  Unable to set applicable IP address"
+		echo "  OS version not supported/could not be determined" 1>&3 2>&4
+		echo "  Unable to set applicable IP address" 1>&3 2>&4
 		exit 1
 		;;
 esac
 
-source ${INCLUDEDIR}/common
 
 check_directory		${DIRECTORY}
 check_file			${DIRECTORY}/gadget.cfg
@@ -35,27 +35,27 @@ check_directory		${HOME}/.ssh
 
 [ ! -f ${HOME}/.ssh/gadget_rsa ] && create_new_key
 
-${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "echo gadget_probe" &> /dev/null
+${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "echo gadget_probe"
 
 # 0 if logs in with available ssh keys, 255 if fails
 if [ ${?} -ne 0 ]; then
-	echo "  Attempting to connect to device..."
-	${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${INCLUDEDIR}/id_rsa root@${IP} -t "echo gadget_probe" &> /dev/null
+	echo "  Attempting to connect to device..." 1>&3 2>&4
+	${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${INCLUDEDIR}/id_rsa root@${IP} -t "echo gadget_probe"
 		
 	if [ ${?} -ne 0 ]; then
-		echo "  ERROR: Unable to login with local or default credentials."
+		echo "  ERROR: Unable to login with local or default credentials." 1>&3 2>&4
 		
-		${PING} -W 5 -c 1 ${IP} &>/dev/null
+		${PING} -W 5 -c 1 ${IP}
 		if [ ${?} -eq 0 ]; then
-			echo "  ERROR: But the devices is booted and ready,"
-			echo "  ERROR: did you leave your ssh keys at home?"
+			echo "  ERROR: But the devices is booted and ready," 1>&3 2>&4
+			echo "  ERROR: did you leave your ssh keys at home?" 1>&3 2>&4
 		else
-			echo "  ERROR: Is the device connected?"
+			echo "  ERROR: Is the device connected?" 1>&3 2>&4
 		fi
 		
 		exit 1
 	else
-		echo "  Copying new key to gadget"
+		echo "  Copying new key to gadget" 1>&3 2>&4
 		## future warning: in certain circumstances gadget_rsa will get huge
 		${SCP} ${SSH_OPTS} -i ${INCLUDEDIR}/id_rsa ${HOME}/.ssh/gadget_rsa.pub root@${IP}:/root/.ssh/authorized_keys
 	
