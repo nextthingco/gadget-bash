@@ -14,4 +14,4 @@ source ${DIRECTORY}/gadget.cfg
 ${DOCKER} build -t ${name}_${uuid}-img ${DIRECTORY}
 
 ## Error check and report eg. "gadget_build error 0-15"
-ERR_CACHE=${?}; [ ${ERR_CACHE} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${ERR_CACHE} ${LINENO}
+RC=${?}; [ ${RC} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${RC} ${LINENO}

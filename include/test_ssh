@@ -6,7 +6,8 @@ SSH_ADD=${SSH_ADD:-ssh-add}
 SCP=${SCP:-scp}
 MKTEMP=${MKTEMP:-mktemp}
 CHMOD=${CHMOD:-chmod}
-REQUIRED=( ${SSH} ${SSH_KEYGEN} ${SCP} ${MKTEMP} ${CHMOD} )
+PING=${PING:-ping}
+REQUIRED=( ${SSH} ${SSH_KEYGEN} ${SCP} ${MKTEMP} ${CHMOD} ${PING} )
 
 source ${INCLUDEDIR}/check_required
 source ${INCLUDEDIR}/os_detect
@@ -36,19 +37,22 @@ check_directory		${HOME}/.ssh
 
 ${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "echo gadget_probe" &> /dev/null
 
-## Error check and report eg. "gadget_build error 0-15"
-ERR_CACHE=${?}; [ ${ERR_CACHE} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${ERR_CACHE} ${LINENO}
-
 # 0 if logs in with available ssh keys, 255 if fails
 if [ ${?} -ne 0 ]; then
-	echo "  This looks like a freshly flashed device..."
+	echo "  Attempting to connect to device..."
 	${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${INCLUDEDIR}/id_rsa root@${IP} -t "echo gadget_probe" &> /dev/null
-	
-	## Error check and report eg. "gadget_build error 0-15"
-	ERR_CACHE=${?}; [ ${ERR_CACHE} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${ERR_CACHE} ${LINENO}
-	
+		
 	if [ ${?} -ne 0 ]; then
-		echo "  Unable to login with local or default credentials, did you leave your keys at home? E:${?}"
+		echo "  ERROR: Unable to login with local or default credentials."
+		
+		${PING} -W 5 -c 1 ${IP} &>/dev/null
+		if [ ${?} -eq 0 ]; then
+			echo "  ERROR: But the devices is booted and ready,"
+			echo "  ERROR: did you leave your ssh keys at home?"
+		else
+			echo "  ERROR: Is the device connected?"
+		fi
+		
 		exit 1
 	else
 		echo "  Copying new key to gadget"
@@ -56,7 +60,7 @@ if [ ${?} -ne 0 ]; then
 		${SCP} ${SSH_OPTS} -i ${INCLUDEDIR}/id_rsa ${HOME}/.ssh/gadget_rsa.pub root@${IP}:/root/.ssh/authorized_keys
 	
 		## Error check and report eg. "gadget_build error 0-15"
-		ERR_CACHE=${?}; [ ${ERR_CACHE} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${ERR_CACHE} ${LINENO}
+		RC=${?}; [ ${RC} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${RC} ${LINENO}
 	fi
 fi
 
