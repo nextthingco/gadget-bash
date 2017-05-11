@@ -10,7 +10,7 @@ source ${INCLUDEDIR}/check_required
 source ${INCLUDEDIR}/common
 
 ## Create directory if a custom one was specified, otherwise, using cwd
-[ ${DIRECTORY} -ne ${PWD} ] && create_directory ${DIRECTORY}
+[ "${DIRECTORY}" != "${PWD}" ] && create_directory ${DIRECTORY}
 check_directory  ${DIRECTORY}
 create_file      ${DIRECTORY}/gadget.cfg
 check_file       ${DIRECTORY}/gadget.cfg
