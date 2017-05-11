@@ -4,7 +4,8 @@ CAT=${CAT:-cat}
 UUIDGEN=${UUIDGEN:-uuidgen}
 BASENAME=${BASENAME:-basename}
 READLINK=${READLINK:-readlink}
-REQUIRED=( ${CAT} ${UUIDGEN} ${BASENAME} ${READLINK} )
+TR=${TR:-tr}
+REQUIRED=( ${CAT} ${UUIDGEN} ${BASENAME} ${READLINK} ${TR} )
 
 source ${INCLUDEDIR}/check_required
 source ${INCLUDEDIR}/common
@@ -20,8 +21,8 @@ check_file       ${DIRECTORY}/Dockerfile
 ## Create scaffolding
 
 echo "project_gadget_version=${GADGET_VERSION}" > ${DIRECTORY}/gadget.cfg
-echo "name=$(${BASENAME} $(${READLINK} -e ${DIRECTORY}))" >> ${DIRECTORY}/gadget.cfg
-echo "uuid=$(${UUIDGEN})"   >> ${DIRECTORY}/gadget.cfg
+echo "name=$(echo ${DIRECTORY##*/} | tr '[:upper:]' '[:lower:]')" >> ${DIRECTORY}/gadget.cfg
+echo "uuid=$(echo $(${UUIDGEN}) | tr '[:upper:]' '[:lower:]')"   >> ${DIRECTORY}/gadget.cfg
 
 ${CAT} <<-EOF > ${DIRECTORY}/Dockerfile
 FROM armhf/alpine
