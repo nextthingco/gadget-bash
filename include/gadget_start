@@ -19,12 +19,12 @@ check_file       ${HOME}/.ssh/gadget_rsa.pub
 
 source ${DIRECTORY}/gadget.cfg
 
-${SSH} ${SSH_OPTS} root@${IP} -t "docker create --name ${name}_${uuid} ${name}_${uuid}-img"
+${SSH} ${SSH_OPTS} -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "docker create --name ${name}_${uuid} ${name}_${uuid}-img"
 
 ## Error check and report eg. "gadget_build error 0-15"
 RC=${?}; [ ${RC} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${RC} ${LINENO}
 
-${SSH} ${SSH_OPTS} root@${IP} -t "docker start -a -i ${name}_${uuid}"
+${SSH} ${SSH_OPTS} -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "docker start -a -i ${name}_${uuid}"
 
 ## Error check and report eg. "gadget_build error 0-15"
 RC=${?}; [ ${RC} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${RC} ${LINENO}
