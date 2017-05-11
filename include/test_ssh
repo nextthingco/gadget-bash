@@ -44,7 +44,7 @@ ${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${HOME}/.ssh/gadget_rsa root@${IP} -t "
 ##       they will be blocked from communicating with the device until reboot or service restart
 
 if [ ${?} -ne 0 ]; then
-	echo "  Attempting to connect to device..." 1>&3 2>&4
+	echo "  - Attempting to connect to device..." 1>&3 2>&4
 	${SSH} ${SSH_OPTS} -oBatchMode=yes -2 -i ${INCLUDEDIR}/id_rsa root@${IP} -t "echo g_probe_default"
 		
 	if [ ${?} -ne 0 ]; then
@@ -64,7 +64,7 @@ if [ ${?} -ne 0 ]; then
 		
 		exit 1
 	else
-		echo "  Copying new key to gadget" 1>&3 2>&4
+		echo "  - Copying new key to gadget" 1>&3 2>&4
 		${SCP} ${SSH_OPTS} -i ${INCLUDEDIR}/id_rsa ${HOME}/.ssh/gadget_rsa.pub root@${IP}:/root/.ssh/authorized_keys
 	
 		## Error check and report eg. "gadget_build error 0-15"

@@ -17,7 +17,7 @@ C_STOP=0
 C_STATUS=0
 C_DELETE=0
 C_SHELL=0
-C_LOG=0
+C_LOGS=0
 
 source ${INCLUDEDIR}/os_detect
 source ${INCLUDEDIR}/common
@@ -49,7 +49,7 @@ while test $# -gt 0; do
 			echo "      status                          [ read container status       ]" 1>&3 2>&4
 			echo "      delete                          [ remove an image from gadget ]" 1>&3 2>&4
 			echo "      shell                           [ gain shell access to debug  ]" 1>&3 2>&4
-			echo "      log                             [ show container's stdout     ]" 1>&3 2>&4
+			echo "      logs                            [ show container's stdout     ]" 1>&3 2>&4
 			exit 0
 			;;
 		-C|--directory)
@@ -74,12 +74,12 @@ while test $# -gt 0; do
 			;;
 		start)
 			C_START=1
-			echo "  - starting container" 1>&3 2>&4
+			echo "  - creating/starting container" 1>&3 2>&4
 			shift
 			;;
 		stop)
 			C_STOP=1
-			echo "  - stopping container" 1>&3 2>&4
+			echo "  - stopping/deleting container" 1>&3 2>&4
 			shift
 			;;
 		status)
@@ -89,7 +89,7 @@ while test $# -gt 0; do
 			;;
 		delete)
 			C_DELETE=1
-			echo "  - delete container on gadget" 1>&3 2>&4
+			echo "  - delete image on gadget" 1>&3 2>&4
 			shift
 			;;
 		shell)
@@ -97,7 +97,7 @@ while test $# -gt 0; do
 			echo "  - entering gadget's shell" 1>&3 2>&4
 			shift
 			;;
-		log)
+		logs)
 			C_LOG=1
 			echo "  - retrieving logs" 1>&3 2>&4
 			shift
@@ -133,4 +133,4 @@ done
 [[ 1 -eq ${C_STATUS} ]] && source ${INCLUDEDIR}/gadget_status && exit 0
 [[ 1 -eq ${C_DELETE} ]] && source ${INCLUDEDIR}/gadget_delete && exit 0
 [[ 1 -eq ${C_SHELL}  ]] && source ${INCLUDEDIR}/gadget_shell  && exit 0
-[[ 1 -eq ${C_LOG}    ]] && source ${INCLUDEDIR}/gadget_log    && exit 0
+[[ 1 -eq ${C_LOG}    ]] && source ${INCLUDEDIR}/gadget_logs   && exit 0

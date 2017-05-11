@@ -16,7 +16,7 @@ case "$(${UNAME})" in
 		OS="windows"
 		;;
 	*)
-		echo "  OS version not supported/could not be determined"
+		echo "  OS version not supported/could not be determined" 1>&3 2>&4
 		exit 1
 		;;
 esac

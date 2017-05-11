@@ -12,11 +12,11 @@ check_file       ${DIRECTORY}/Dockerfile
 
 source ${DIRECTORY}/gadget.cfg
 
-echo "  - This may take a moment.."
-echo "  - Use [-V] flag to see verbose build progress"
+echo "  - This may take a moment.." 1>&3 2>&4
+echo "  - Use [-V] flag to see verbose build progress" 1>&3 2>&4
 ${DOCKER} build -t ${name}_${uuid}-img ${DIRECTORY}
 
 ## Error check and report eg. "gadget_build error 0-15"
 RC=${?}; [ ${RC} -ne 0 ] && gadget_error ${BASH_SOURCE##*/} ${RC} ${LINENO}
 
-echo "  - done"
+echo "  - done" 1>&3 2>&4
